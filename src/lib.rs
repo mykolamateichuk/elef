@@ -24,30 +24,19 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let file_contents = fs::read_to_string(config.file_path)?;
-    
-    let size = count_size(file_contents);
+    let file_metadata = fs::metadata(&config.file_path.clone())?;
+    let size = file_metadata.len();
 
     let fmt_size = if !config.show_in_bytes {
-        SizeFmt::create(size)
+        SizeFmt::create(size as usize)
     }
     else {
-        SizeFmt::create_in_bytes(size)
+        SizeFmt::create_in_bytes(size as usize)
     };
 
     println!("{}", fmt_size);
 
     Ok(())
-}
-
-fn count_size(contents: String) -> usize {
-    let mut counter: usize = 0;
-
-    for _ in contents.chars() {
-        counter += 1;
-    }
-
-    counter
 }
 
 struct SizeFmt {
